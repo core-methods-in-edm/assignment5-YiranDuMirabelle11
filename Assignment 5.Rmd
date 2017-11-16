@@ -104,3 +104,5 @@ D2$overlap <- ifelse(D2$prediction==D2$advice,1,0)
 sum(D2$overlap)/length(D2$overlap)
 
 ```
+
+In dataset 2, we find that 58% of the students are predicted right in terms of actions. However, after observing the dataset, we find all the students have passed the test and the model we created is not useful for predicton for this dataset. Therefore, it is not generalizable to the second dataset.
