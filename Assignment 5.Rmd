@@ -1,6 +1,6 @@
 ---
 title: "Assignment 5 - Decision Trees"
-author: "Charles Lang"
+author: "Charles Lang + Yiran Du"
 date: "November 9, 2016"
 output: html_document
 ---
@@ -16,7 +16,7 @@ library(party)
 
 ## Part I
 ```{r}
-D1 <- 
+D1 <- read.csv("~/Desktop/github/Assignment 5/intelligent_tutor.csv")
 ```
 
 ##Classification Tree
@@ -58,7 +58,27 @@ score_ctree <- ctree(factor(advice) ~ prior_prob_count + prior_percent_correct +
 plot(score_ctree)
 ```
 
-Please interpret the tree, which two behaviors do you think the teacher should most closely pay attemtion to?
+## Please interpret the tree, which two behaviors do you think the teacher should most closely pay attemtion to?
+Interpretation of the Tree: After the classification tree, students are all clustered into 5 groups. The criteria is as follows. In the first place, we divide students on the basis of their hints. If students ask for no hints, then they go to group (2), students asking for hints are grouped in group(5). 
+
+### Node 3:
+We frist look at students asking for no hints. They can be divided based on their number of problems done in the previous section. If they have finished less than 85 problems, they are grouped as Node 3 and there are 145 of them.
+
+### Node 4: 
+Students finishing more than 85 problems are labeled as Node 4 and for clarification these 76 students are who have not asked for any hints and finished more than 85 problems in the previous session.
+
+### Node 9:
+Then we look at students who asked for hints. They are divided by the cutoff of 12 hints. Those who have asked for more than 12 hints are grouped as Node 9 and there are 46 of them. 
+
+### Node 8:
+For the rest who have asked for less than 12 hints are grouped as group 6 and need further division. Group 6 are further divided based on students correctness in the previous session. Student who have asked for less than 12 hints and have a correctness more than 0.629 are finalized at Node 8 and there are 45 of them. 
+
+### Node 7:
+The rest, who have a correctness less than 0.629 end at Node 7 and there are 66 of them.
+
+All in all, there are five groups after classification on the basis of number of hints, correctness in the prior session and problems done in the previous session.
+
+Therefore we can know that Node 7 and Node 9 needs teachers attention to intervene. This is because when we observe the distribution of actions in each node, it can be found that the ratio of needs intervention is comparatively high in Node 7 and Node 9, reaching more than 0.2. These are the students who are either asking for more than 12 hints or student who ask for less than 12 hints but have a correctness of less than 0.629 in the previous session.
 
 #Test Tree
 Upload the data "intelligent_tutor_new.csv". This is a data set of a differnt sample of students doing the same problems in the same system. We can use the tree we built for the previous data set to try to predict the "advice" we should give the teacher about these new students. 
@@ -66,7 +86,7 @@ Upload the data "intelligent_tutor_new.csv". This is a data set of a differnt sa
 ```{r}
 #Upload new data
 
-D2 <- 
+D2 <- read.csv("~/Desktop/github/Assignment 5/intelligent_tutor_new.csv")
 
 #Generate predicted advice for new students based on tree generated from old students
 
@@ -74,4 +94,13 @@ D2$prediction <- predict(score_ctree, D2)
 
 ``` 
 ## Part III
-Compare the predicted advice with the actual advice that these studnts recieved. What is the difference between the observed and predicted results?
+Compare the predicted advice with the actual advice that these students recieved. What is the difference between the observed and predicted results?
+
+```{r}
+# The observed result
+D2$advice <- ifelse(D2$score <=0.4, "intervene", ifelse(D2$score > 0.4 & D2$score <=0.8, "monitor", "no action"))
+
+D2$overlap <- ifelse(D2$prediction==D2$advice,1,0)
+sum(D2$overlap)/length(D2$overlap)
+
+```
